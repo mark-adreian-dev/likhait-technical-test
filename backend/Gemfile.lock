@@ -96,6 +96,10 @@ GEM
       irb (~> 1.10)
       reline (>= 0.3.8)
     diff-lcs (1.6.2)
+    dotenv (3.2.0)
+    dotenv-rails (3.2.0)
+      dotenv (= 3.2.0)
+      railties (>= 6.1)
     drb (2.2.3)
     erb (6.0.1)
     erubi (1.13.1)
@@ -146,6 +150,9 @@ GEM
     nio4r (2.7.5)
     nokogiri (1.19.0-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.19.0-x86_64-linux-gnu)
+      racc (~> 1.4)
+    pagy (9.4.0)
     parallel (1.27.0)
     parser (3.3.10.0)
       ast (~> 2.4.1)
@@ -278,15 +285,18 @@ GEM
 
 PLATFORMS
   arm64-darwin
+  x86_64-linux
 
 DEPENDENCIES
   bootsnap
   brakeman
   database_cleaner-active_record
   debug
+  dotenv-rails
   factory_bot_rails
   faker
   mysql2 (~> 0.5)
+  pagy (~> 9.4)
   puma (>= 5.0)
   rack-cors
   rails (~> 7.2.2, >= 7.2.2.2)
