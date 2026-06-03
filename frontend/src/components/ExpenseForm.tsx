@@ -2,11 +2,11 @@
  * Form component for adding/editing expenses
  */
 
-import React from "react";
-import { ExpenseFormData } from "../types";
-import { EXPENSE_CATEGORIES } from "../constants/categories";
+import React, { useEffect, useState } from "react";
+import { Category, ExpenseFormData, PagiantedRepsonse } from "../types";
 import { TextField, SelectBox, Button } from "../vibes";
 import { useExpenseForm } from "../hooks/useExpenseForm";
+import { fetchCategories } from "../services/category.repository";
 
 interface ExpenseFormProps {
   initialData?: Partial<ExpenseFormData>;
@@ -15,13 +15,20 @@ interface ExpenseFormProps {
   submitLabel?: string;
 }
 
+export interface CategoryOption {
+  value: number;
+  label: string;
+}
+
 export function ExpenseForm({
   initialData,
   onSubmit,
   onCancel,
   submitLabel = "Add Expense",
 }: ExpenseFormProps) {
-  const { formData, errors, isSubmitting, handleChange, handleSubmit } =
+  const [loading, setLoading] = useState<boolean>(false)
+  const [categoryOption, setCategoryOption] = useState<CategoryOption[]>([])
+   const { formData, errors, isSubmitting, handleChange, handleSubmit } =
     useExpenseForm({
       initialData,
       onSubmit,
@@ -39,10 +46,26 @@ export function ExpenseForm({
     marginTop: "0.5rem",
   };
 
-  const categoryOptions = EXPENSE_CATEGORIES.map((category) => ({
-    value: category,
-    label: category,
-  }));
+  const fetchCategoriesData = async () => {
+    try {
+      setLoading(true);
+      const data: PagiantedRepsonse<Category[]> = await fetchCategories({})
+      setCategoryOption(
+        data.data.content.map((category: Category) => ({
+          value: category.id,
+          label: category.name,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategoriesData()
+  }, [])
 
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
@@ -71,7 +94,7 @@ export function ExpenseForm({
 
       <SelectBox
         label="Category"
-        options={categoryOptions}
+        options={categoryOption}
         value={formData.category}
         onChange={(e) => handleChange("category", e.target.value)}
         error={errors.category}
@@ -86,6 +109,7 @@ export function ExpenseForm({
         onChange={(e) => handleChange("date", e.target.value)}
         error={errors.date}
         fullWidth
+        max={new Date().toISOString().split("T")[0]}
         required
       />
 
@@ -93,7 +117,7 @@ export function ExpenseForm({
         <Button
           type="submit"
           variant="primary"
-          disabled={isSubmitting}
+          disabled={isSubmitting || loading}
           fullWidth
         >
           {isSubmitting ? "Submitting..." : submitLabel}
@@ -103,7 +127,7 @@ export function ExpenseForm({
             type="button"
             variant="secondary"
             onClick={onCancel}
-            disabled={isSubmitting}
+            disabled={isSubmitting || loading}
           >
             Cancel
           </Button>
