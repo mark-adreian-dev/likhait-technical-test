@@ -1,5 +1,6 @@
 import React from "react";
 import { COLORS } from "../constants/colors";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
   onNavigate?: (page: string) => void;
@@ -93,7 +94,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     alignItems: "center",
     justifyContent: isCollapsed ? "center" : "flex-start",
     gap: "16px",
-    background: currentPage === "history" ? COLORS.primary.p03 : "transparent",
     border: "none",
     cursor: "pointer",
     fontSize: "18px",
@@ -106,6 +106,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const navTextStyle: React.CSSProperties = {
     display: isCollapsed ? "none" : "inline",
   };
+
+  const navigate = useNavigate()
 
   return (
     <aside style={sidebarStyle}>
@@ -140,18 +142,13 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       <nav style={navStyle}>
         <button
-          style={navItemStyle}
-          onClick={() => onNavigate?.("history")}
-          onMouseEnter={(e) => {
-            if (currentPage !== "history") {
-              e.currentTarget.style.background = COLORS.primary.p02;
-            }
+          style={{
+            ...navItemStyle,
+            ...(currentPage === "history" && {
+              backgroundColor: COLORS.primary.p03,
+            }),
           }}
-          onMouseLeave={(e) => {
-            if (currentPage !== "history") {
-              e.currentTarget.style.background = "transparent";
-            }
-          }}
+          onClick={() => navigate("history")}
         >
           <svg
             width="24"
@@ -167,6 +164,34 @@ const Sidebar: React.FC<SidebarProps> = ({
             <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
           <span style={navTextStyle}>History</span>
+        </button>
+         <button
+          style={{
+            ...navItemStyle,
+            ...(currentPage === "category" && {
+              backgroundColor: COLORS.primary.p03,
+            }),
+          }}
+          onClick={() => navigate("category")}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-chart-column-stacked-icon lucide-chart-column-stacked"
+          >
+            <path d="M11 13H7" />
+            <path d="M19 9h-4" />
+            <path d="M3 3v16a2 2 0 0 0 2 2h16" />
+            <rect x="15" y="5" width="4" height="12" rx="1" />
+            <rect x="7" y="8" width="4" height="9" rx="1" />
+          </svg>
+          <span style={navTextStyle}>Category</span>
         </button>
       </nav>
     </aside>
