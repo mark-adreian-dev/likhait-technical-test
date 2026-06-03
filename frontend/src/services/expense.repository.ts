@@ -39,7 +39,7 @@ export async function getExpenses(
 export async function fetchCategories(): Promise<
   Array<{ id: number; name: string }>
 > {
-  const response = await fetch(`${API_BASE_URL}/categories`);
+  const response = await fetch(`${API_BASE_URL}/expenses`);
   if (!response.ok) {
     throw new Error("Failed to fetch categories");
   }
