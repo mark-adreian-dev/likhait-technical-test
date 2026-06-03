@@ -2,18 +2,21 @@
  * Reusable Pagination component
  */
 
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { COLORS } from "../constants/colors";
 import { Button } from "./Button";
+import { PaginationContorls } from "../types";
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  setPagination: Dispatch<SetStateAction<PaginationContorls>>
 }
 
 export function Pagination({
   currentPage,
+  setPagination,
   totalPages,
   onPageChange,
 }: PaginationProps) {
@@ -40,7 +43,16 @@ export function Pagination({
       <Button
         variant="secondary"
         size="small"
-        onClick={() => onPageChange(currentPage - 1)}
+        onClick={() => {
+     
+          onPageChange(currentPage - 1)
+          setPagination((prev: PaginationContorls) => {
+            return {
+              ...prev,
+              current_page: currentPage - 1
+            }
+          })
+        }}
         disabled={currentPage === 1}
       >
         Previous
@@ -51,7 +63,15 @@ export function Pagination({
       <Button
         variant="secondary"
         size="small"
-        onClick={() => onPageChange(currentPage + 1)}
+        onClick={() => {
+          onPageChange(currentPage + 1)
+          setPagination((prev: PaginationContorls) => {
+            return {
+              ...prev,
+              current_page: currentPage + 1
+            }
+          })
+        }}
         disabled={currentPage === totalPages}
       >
         Next

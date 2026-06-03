@@ -1,40 +1,19 @@
-import React, { useState } from "react";
-import Sidebar from "./components/Sidebar";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import DashboardLayout from "./layout/DashboardLayout";
 import HistoryPage from "./pages/HistoryPage";
-import { COLORS } from "./constants/colors";
+import CategoryPage from "./pages/CategoryPage";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState("history");
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
-  const appStyle: React.CSSProperties = {
-    display: "flex",
-    minHeight: "100vh",
-    background: COLORS.secondary.s01,
-  };
-
-  const mainStyle: React.CSSProperties = {
-    flex: 1,
-    marginLeft: isSidebarCollapsed ? "80px" : "360px",
-    transition: "margin-left 0.3s ease",
-  };
-
-  const handleToggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
-  };
-
   return (
-    <div style={appStyle}>
-      <Sidebar
-        currentPage={currentPage}
-        onNavigate={setCurrentPage}
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={handleToggleSidebar}
-      />
-      <main style={mainStyle}>
-        {currentPage === "history" && <HistoryPage />}
-      </main>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<DashboardLayout />}>
+          <Route index element={<Navigate to="/history" replace />} />
+          <Route path="history" element={<HistoryPage />} />
+          <Route path="category" element={<CategoryPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

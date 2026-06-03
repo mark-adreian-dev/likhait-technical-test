@@ -9,7 +9,7 @@ import { getCategoryEmoji } from "../constants/categoryEmojis";
 import { COLORS } from "../constants/colors";
 import { Button, Modal, Pagination } from "../vibes";
 import { ExpenseForm } from "./ExpenseForm.tsx";
-import { deleteExpense, updateExpense } from "../services/api";
+import { deleteExpense, updateExpense } from "../services/expense.repository.ts";
 
 interface CalendarExpenseTableProps {
   expenses: Expense[];

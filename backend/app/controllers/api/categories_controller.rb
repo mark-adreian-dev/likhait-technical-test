@@ -2,7 +2,7 @@
 class Api::CategoriesController < ApplicationController
   def index
     begin
-      categories = categories = Category.where(is_deleted: false)
+      categories = categories = Category.order(created_at: :desc).where(is_deleted: false)
       response = PaginatedResponse.new()
 
       render json: response.format_response(
