@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getExpenses, createExpense } from "../services/expense.repository";
-import { Expense, ExpenseFormData } from "../types";
+import { Category, Expense, ExpenseFormData } from "../types";
 import YearNavigation from "../components/YearNavigation";
 import { MonthNavigation } from "../components/MonthNavigation";
 import CategoryBreakdown from "../components/CategoryBreakdown";
@@ -49,6 +49,12 @@ const HistoryPage: React.FC = () => {
     fetchExpenses();
   }, [selectedYear, selectedMonth]);
 
+  
+  useEffect(() => {
+    fetchExpenses();
+  }, [selectedYear, selectedMonth]);
+
+
   const fetchExpenses = async () => {
     try {
       setLoading(true);
@@ -72,6 +78,7 @@ const HistoryPage: React.FC = () => {
   };
 
   const handleAddExpense = async (data: ExpenseFormData) => {
+    console.log(data)
     try {
       await createExpense(data);
       setIsModalOpen(false);

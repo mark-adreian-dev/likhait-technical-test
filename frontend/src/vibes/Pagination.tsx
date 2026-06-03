@@ -11,7 +11,7 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  setPagination: Dispatch<SetStateAction<PaginationContorls>>
+  setPagination?: Dispatch<SetStateAction<PaginationContorls>>
 }
 
 export function Pagination({
@@ -46,12 +46,14 @@ export function Pagination({
         onClick={() => {
      
           onPageChange(currentPage - 1)
-          setPagination((prev: PaginationContorls) => {
+          if (setPagination) {
+            setPagination((prev: PaginationContorls) => {
             return {
               ...prev,
               current_page: currentPage - 1
             }
           })
+          }
         }}
         disabled={currentPage === 1}
       >
@@ -65,12 +67,14 @@ export function Pagination({
         size="small"
         onClick={() => {
           onPageChange(currentPage + 1)
-          setPagination((prev: PaginationContorls) => {
-            return {
-              ...prev,
-              current_page: currentPage + 1
-            }
-          })
+          if(setPagination){
+            setPagination((prev: PaginationContorls) => {
+              return {
+                ...prev,
+                current_page: currentPage + 1
+              }
+            })
+          }
         }}
         disabled={currentPage === totalPages}
       >

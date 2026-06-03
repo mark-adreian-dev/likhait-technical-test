@@ -4,12 +4,13 @@
 
 import React from "react";
 import { COLORS } from "../constants/colors";
+import { CategoryOption } from "../components/ExpenseForm";
 
 interface SelectBoxProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
   fullWidth?: boolean;
-  options: Array<{ value: string; label: string }>;
+  options: CategoryOption[];
 }
 
 export function SelectBox({

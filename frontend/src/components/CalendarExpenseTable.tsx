@@ -2,18 +2,20 @@
  * Calendar expense table component
  */
 
-import React, { useState } from "react";
-import { Expense, ExpenseFormData } from "../types";
+import React, { useEffect, useState } from "react";
+import { Category, Expense, ExpenseFormData, PagiantedRepsonse } from "../types";
 import { formatCurrency, formatDate } from "../utils/expenseUtils";
 import { getCategoryEmoji } from "../constants/categoryEmojis";
 import { COLORS } from "../constants/colors";
 import { Button, Modal, Pagination } from "../vibes";
 import { ExpenseForm } from "./ExpenseForm.tsx";
 import { deleteExpense, updateExpense } from "../services/expense.repository.ts";
+import { fetchCategories } from "../services/category.repository.ts";
 
 interface CalendarExpenseTableProps {
   expenses: Expense[];
   onExpenseUpdated: () => void;
+  
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -27,11 +29,46 @@ export function CalendarExpenseTable({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
 
-  const totalPages = Math.ceil(expenses.length / ITEMS_PER_PAGE);
+  const reorderedExpenses = React.useMemo(() => {
+  if (expenses.length <= 1) return expenses;
+
+    const latestExpense = expenses.reduce((latest, current) =>
+      new Date(current.created_at) > new Date(latest.created_at)
+        ? current
+        : latest
+    );
+
+    return [
+      latestExpense,
+      ...expenses.filter(expense => expense.id !== latestExpense.id),
+    ];
+  }, [expenses]);
+
+  const totalPages = Math.ceil(reorderedExpenses.length / ITEMS_PER_PAGE);
+
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentExpenses = expenses.slice(startIndex, endIndex);
+
+  const currentExpenses = reorderedExpenses.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    fetchCategoriesData()
+  }, [])
+
+  const fetchCategoriesData = async () => {
+    try {
+      setLoading(true);
+      const data: PagiantedRepsonse<Category[]> = await fetchCategories({})
+      setCategories(data.data.content)
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEdit = (expense: Expense) => {
     setEditingExpense(expense);
@@ -104,6 +141,7 @@ export function CalendarExpenseTable({
 
   const actionButtonsStyle: React.CSSProperties = {
     display: "flex",
+    justifyContent: "center",
     gap: "0.5rem",
   };
 
@@ -191,7 +229,7 @@ export function CalendarExpenseTable({
             initialData={{
               amount: editingExpense.amount.toString(),
               description: editingExpense.description,
-              category: editingExpense.category,
+              category: categories.find(category => category.name === editingExpense.category)?.id.toString(),
               date: formatDate(new Date(editingExpense.date)),
             }}
             onSubmit={handleUpdate}
